@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-5">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Вход в систему</h4>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">Тестовые учётные данные: <strong>user / qwerty</strong></p>
+                <form method="post" action="{{ url_for('login', next=request.args.get('next', '')) }}">
+                    <div class="mb-3">
+                        <label for="login-username" class="form-label">Логин</label>
+                        <input type="text" class="form-control" id="login-username" name="username" required autofocus>
+                    </div>
+                    <div class="mb-3">
+                        <label for="login-password" class="form-label">Пароль</label>
+                        <div class="input-group">
+                            <input type="password" class="form-control" id="login-password" name="password" required>
+                            <button class="btn btn-outline-secondary" type="button" id="toggle-pwd">Показать</button>
+                        </div>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="login-remember" name="remember">
+                        <label class="form-check-label" for="login-remember">Запомнить меня</label>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Войти</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const toggleBtn = document.getElementById('toggle-pwd');
+    const pwdInput = document.getElementById('login-password');
+    toggleBtn.addEventListener('click', function() {
+        const type = pwdInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        pwdInput.setAttribute('type', type);
+        this.textContent = type === 'password' ? 'Показать' : 'Скрыть';
+    });
+</script>
+{% endblock %}

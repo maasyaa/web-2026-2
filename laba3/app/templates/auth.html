@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1 class="my-5 text-center">Аутентификация в приложении</h1>
+<div class="row">
+    <div class="col-md-6 mx-auto">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Управление сессией</h5>
+                <p class="card-text">Здесь вы можете проверить работу Flask-Login, счётчика посещений и защищённых страниц.</p>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        <a href="{{ url_for('counter') }}" class="text-decoration-none">🔢 Счётчик посещений</a>
+                        <span class="text-muted float-end">на основе session</span>
+                    </li>
+                    {% if current_user.is_authenticated %}
+                    <li class="list-group-item">
+                        <a href="{{ url_for('secret') }}" class="text-decoration-none">🔒 Секретная страница</a>
+                        <span class="text-muted float-end">доступна только авторизованным</span>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="{{ url_for('logout') }}" class="text-decoration-none text-danger">🚪 Выйти из системы</a>
+                    </li>
+                    {% else %}
+                    <li class="list-group-item">
+                        <a href="{{ url_for('login') }}" class="text-decoration-none">🔑 Войти в систему</a>
+                        <span class="text-muted float-end">логин: user, пароль: qwerty</span>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+            <div class="card-footer text-muted">
+                {% if current_user.is_authenticated %}
+                    Вы вошли как <strong>{{ current_user.username }}</strong>
+                {% else %}
+                    Вы не авторизованы
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
