@@ -1,0 +1,7 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1 class="my-5">Cookie</h1>
+<p>Текущее значение куки 'my_cookie': <strong>{{ request.cookies.get('my_cookie', 'не установлена') }}</strong></p>
+<p>Обновите страницу, чтобы изменить состояние куки.</p>
+{% endblock %}
