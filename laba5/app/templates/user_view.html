@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header bg-primary text-white">
+        <h3>Карточка пользователя</h3>
+    </div>
+    <div class="card-body">
+        <table class="table table-bordered">
+            <tr><th>ID</th><td>{{ u.id }}</td></tr>
+            <tr><th>Логин</th><td>{{ u.login }}</td></tr>
+            <tr><th>Фамилия</th><td>{{ u.last_name or '—' }}</td></tr>
+            <tr><th>Имя</th><td>{{ u.first_name }}</td></tr>
+            <tr><th>Отчество</th><td>{{ u.middle_name or '—' }}</td></tr>
+            <tr><th>Роль</th><td>{{ u.role_obj.name if u.role_obj else 'Нет роли' }}</td></tr>
+            <tr><th>Дата регистрации</th><td>{{ u.created_at.strftime('%d.%m.%Y %H:%M') }}</td></tr>
+        </table>
+    </div>
+    <div class="card-footer">
+        <a href="{{ url_for('index') }}" class="btn btn-secondary">Назад</a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Статистика по пользователям</h1>
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead><tr><th>№</th><th>Пользователь</th><th>Количество посещений</th></tr></thead>
+        <tbody>
+            {% for row in stats %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td>
+                    {% if row[1] %}
+                        {{ row[1] }} {{ row[2] }} {{ row[3] or '' }}
+                    {% else %}
+                        Неаутентифицированный пользователь
+                    {% endif %}
+                </td>
+                <td>{{ row[4] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+<a href="{{ url_for('reports.export_csv', type='users') }}" class="btn btn-success">Экспорт в CSV</a>
+<a href="{{ url_for('reports.index') }}" class="btn btn-secondary">Назад</a>
+{% endblock %}

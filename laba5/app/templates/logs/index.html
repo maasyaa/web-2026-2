@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Журнал посещений</h1>
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+            <tr><th>№</th><th>Пользователь</th><th>Страница</th><th>Дата</th></tr>
+        </thead>
+        <tbody>
+            {% for log in logs %}
+            <tr>
+                <td>{{ (pagination.page - 1) * pagination.per_page + loop.index }}</td>
+                <td>{% if log.user %}{{ log.user.fio }}{% else %}Гость{% endif %}</td>
+                <td><code>{{ log.path }}</code></td>
+                <td>{{ log.created_at.strftime('%d.%m.%Y %H:%M:%S') }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+<nav>
+    <ul class="pagination">
+        {% if pagination.has_prev %}
+        <li class="page-item"><a class="page-link" href="{{ url_for('reports.index', page=pagination.prev_num) }}">Назад</a></li>
+        {% endif %}
+        {% for p in pagination.iter_pages() %}
+            {% if p %}
+                <li class="page-item {% if p == pagination.page %}active{% endif %}"><a class="page-link" href="{{ url_for('reports.index', page=p) }}">{{ p }}</a></li>
+            {% else %}
+                <li class="page-item disabled"><span class="page-link">…</span></li>
+            {% endif %}
+        {% endfor %}
+        {% if pagination.has_next %}
+        <li class="page-item"><a class="page-link" href="{{ url_for('reports.index', page=pagination.next_num) }}">Вперёд</a></li>
+        {% endif %}
+    </ul>
+</nav>
+<div class="mt-3">
+    <a href="{{ url_for('reports.pages_stat') }}" class="btn btn-outline-primary">Статистика по страницам</a>
+    <a href="{{ url_for('reports.users_stat') }}" class="btn btn-outline-primary">Статистика по пользователям</a>
+</div>
+{% endblock %}

@@ -1,0 +1,43 @@
+{% macro user_form(form, is_edit=False) %}
+<form method="POST">
+    {{ form.hidden_tag() }}
+    {% if not is_edit %}
+    <div class="mb-3">
+        {{ form.login.label(class="form-label") }}
+        {{ form.login(class="form-control" + (" is-invalid" if form.login.errors else "")) }}
+        {% for error in form.login.errors %}<div class="invalid-feedback">{{ error }}</div>{% endfor %}
+    </div>
+    <div class="mb-3">
+        {{ form.password.label(class="form-label") }}
+        {{ form.password(class="form-control" + (" is-invalid" if form.password.errors else "")) }}
+        {% for error in form.password.errors %}<div class="invalid-feedback">{{ error }}</div>{% endfor %}
+    </div>
+    <div class="mb-3">
+        {{ form.confirm.label(class="form-label") }}
+        {{ form.confirm(class="form-control" + (" is-invalid" if form.confirm.errors else "")) }}
+        {% for error in form.confirm.errors %}<div class="invalid-feedback">{{ error }}</div>{% endfor %}
+    </div>
+    {% endif %}
+    <div class="mb-3">
+        {{ form.last_name.label(class="form-label") }}
+        {{ form.last_name(class="form-control" + (" is-invalid" if form.last_name.errors else "")) }}
+        {% for error in form.last_name.errors %}<div class="invalid-feedback">{{ error }}</div>{% endfor %}
+    </div>
+    <div class="mb-3">
+        {{ form.first_name.label(class="form-label") }}
+        {{ form.first_name(class="form-control" + (" is-invalid" if form.first_name.errors else "")) }}
+        {% for error in form.first_name.errors %}<div class="invalid-feedback">{{ error }}</div>{% endfor %}
+    </div>
+    <div class="mb-3">
+        {{ form.middle_name.label(class="form-label") }}
+        {{ form.middle_name(class="form-control") }}
+    </div>
+    <div class="mb-3">
+        {{ form.role_id.label(class="form-label") }}
+        {{ form.role_id(class="form-select bg-dark text-white border-secondary") }}
+    </div>
+    <div class="d-grid mt-4">
+        {{ form.submit(class="btn btn-primary btn-lg shadow-glow") }}
+    </div>
+</form>
+{% endmacro %}
