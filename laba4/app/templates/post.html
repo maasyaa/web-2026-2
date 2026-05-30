@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <!-- Post Title -->
+        <h1 class="mb-4">{{ post.title }}</h1>
+
+        <!-- Post Author and Date -->
+        <div class="text-muted mb-4">
+            <span class="fw-bold">Автор: {{ post.author }}</span> |
+            <span>Дата публикации: {{ post.date.strftime('%Y-%m-%d') }}</span>
+        </div>
+
+        <!-- Post Image -->
+        <img src="{{ url_for('static', filename='images/' + post.image_id) }}" class="img-fluid rounded mb-4 w-100"
+            alt="{{ post.title }}">
+
+        <!-- Post Text -->
+        <div class="mb-5 lead">
+            {{ post.text }}
+        </div>
+
+        <hr>
+
+        <!-- Comments Form -->
+        <div class="card my-4 bg-light">
+            <h5 class="card-header">Оставьте комментарий:</h5>
+            <div class="card-body">
+                <form>
+                    <div class="mb-3">
+                        <textarea class="form-control" rows="3" placeholder="Ваш комментарий..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Отправить</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Comments List -->
+        <h4 class="mb-4">Комментарии:</h4>
+
+        {% macro render_comment(comment) %}
+        <div class="d-flex mb-4">
+            <div class="flex-shrink-0">
+                <img class="rounded-circle" src="https://dummyimage.com/50x50/ced4da/6c757d.jpg" alt="...">
+            </div>
+            <div class="ms-3 w-100">
+                <h5 class="fw-bold">{{ comment.author }}</h5>
+                {{ comment.text }}
+
+                {% if comment.replies %}
+                {% for reply in comment.replies %}
+                <div class="d-flex mt-4">
+                    <div class="flex-shrink-0">
+                        <img class="rounded-circle" src="https://dummyimage.com/50x50/ced4da/6c757d.jpg" alt="...">
+                    </div>
+                    <div class="ms-3 w-100">
+                        <h5 class="fw-bold">{{ reply.author }}</h5>
+                        {{ reply.text }}
+                    </div>
+                </div>
+                {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+        {% endmacro %}
+
+        {% for comment in post.comments %}
+        {{ render_comment(comment) }}
+        {% endfor %}
+
+    </div>
+</div>
+{% endblock %}
