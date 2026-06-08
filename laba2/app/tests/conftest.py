@@ -8,7 +8,7 @@ from contextlib import contextmanager
 # Добавляем путь к родительской папке (где лежит app1.py)
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from app import app as application
+from app2 import app as application
 
 @pytest.fixture
 def app():
