@@ -183,20 +183,19 @@ def change_password():
     return render_template('change_password.html', title='Смена пароля', form=form)
 
 # ---------------- Инициализация БД -----------------
-with app.app_context():
-    db.create_all()
-    if Role.query.count() == 0:
-        admin_role = Role(name='Администратор', description='Полный доступ')
-        user_role = Role(name='Пользователь', description='Обычный пользователь')
-        db.session.add_all([admin_role, user_role])
-        db.session.commit()
-    if not User.query.filter_by(login='admin').first():
-        admin = User(login='admin', first_name='Администратор', role_id=1)
-        admin.set_password('Admin123!')
-        demo = User(login='user', first_name='Обычный', last_name='Пользователь', role_id=2)
-        demo.set_password('User123!')
-        db.session.add_all([admin, demo])
-        db.session.commit()
-
 if __name__ == '__main__':
+    with app.app_context():
+        db.create_all()
+        if Role.query.count() == 0:
+            admin_role = Role(name='Администратор', description='Полный доступ')
+            user_role = Role(name='Пользователь', description='Обычный пользователь')
+            db.session.add_all([admin_role, user_role])
+            db.session.commit()
+        if not User.query.filter_by(login='admin').first():
+            admin = User(login='admin', first_name='Администратор', role_id=1)
+            admin.set_password('Admin123!')
+            demo = User(login='user', first_name='Обычный', last_name='Пользователь', role_id=2)
+            demo.set_password('User123!')
+            db.session.add_all([admin, demo])
+            db.session.commit()
     app.run(debug=True)
