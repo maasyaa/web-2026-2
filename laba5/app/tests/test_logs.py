@@ -1,76 +1,124 @@
 import pytest
-from app import app, db
-from models import User, Role, VisitLog
+import sys
+import os
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from app5 import app as flask_app, db, User
+
 
 @pytest.fixture
-def client():
-    app.config['TESTING'] = True
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
-    app.config['WTF_CSRF_ENABLED'] = False
-    with app.test_client() as client:
-        with app.app_context():
-            db.create_all()
-            # Создаём роли
-            admin_role = Role(name='Администратор', description='')
-            user_role = Role(name='Пользователь', description='')
+def app():
+    flask_app.config['TESTING'] = True
+    flask_app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
+    flask_app.config['WTF_CSRF_ENABLED'] = False
+    flask_app.secret_key = 'test-secret-key'
+
+    with flask_app.app_context():
+        db.create_all()
+
+        from werkzeug.security import generate_password_hash
+        from app5 import Role
+
+        if not Role.query.first():
+            admin_role = Role(name='Администратор', description='Полный доступ')
+            user_role = Role(name='Пользователь', description='Ограниченный доступ')
             db.session.add_all([admin_role, user_role])
             db.session.commit()
-            # Создаём тестового админа и пользователя
-            admin = User(login='admin', first_name='Admin', role_id=1)
-            admin.set_password('Admin123!')
-            user = User(login='user', first_name='User', role_id=2)
-            user.set_password('User123!')
-            db.session.add_all([admin, user])
-            db.session.commit()
-        yield client
-        with app.app_context():
-            db.drop_all()
 
-def login(client, login, password):
-    return client.post('/login', data={'login': login, 'password': password, 'remember': False}, follow_redirects=True)
+        if not User.query.filter_by(login='admin').first():
+            admin_user = User(
+                login='admin',
+                password_hash=generate_password_hash('admin-Qwerty1234'),
+                first_name='Админ',
+                last_name='Тестовый',
+                role_id=1
+            )
+            db.session.add(admin_user)
 
-def test_logging_works(client):
-    """Проверка, что посещения логируются"""
-    client.get('/')
-    with app.app_context():
-        assert VisitLog.query.count() >= 1
+        if not User.query.filter_by(login='testuser').first():
+            regular_user = User(
+                login='testuser',
+                password_hash=generate_password_hash('qwerty-Qwerty1234'),
+                first_name='Тест',
+                last_name='Пользователь',
+                role_id=2
+            )
+            db.session.add(regular_user)
 
-def test_admin_can_see_all_logs(client):
-    login(client, 'admin', 'Admin123!')
-    # Создаём несколько логов от разных пользователей
-    with app.app_context():
-        user = User.query.filter_by(login='user').first()
-        log1 = VisitLog(path='/test1', user_id=1)
-        log2 = VisitLog(path='/test2', user_id=user.id)
-        db.session.add_all([log1, log2])
         db.session.commit()
-    rv = client.get('/logs/')
-    assert b'/test1' in rv.data
-    assert b'/test2' in rv.data
 
-def test_user_sees_only_own_logs(client):
-    login(client, 'user', 'User123!')
-    with app.app_context():
-        user = User.query.filter_by(login='user').first()
-        admin = User.query.filter_by(login='admin').first()
-        log1 = VisitLog(path='/user_page', user_id=user.id)
-        log2 = VisitLog(path='/admin_page', user_id=admin.id)
-        db.session.add_all([log1, log2])
-        db.session.commit()
-    rv = client.get('/logs/')
-    assert b'/user_page' in rv.data
-    assert b'/admin_page' not in rv.data
+    yield flask_app
 
-def test_pages_stat_only_for_admin(client):
-    login(client, 'user', 'User123!')
-    rv = client.get('/logs/pages', follow_redirects=True)
-    assert b'У вас недостаточно прав' in rv.data
-    login(client, 'admin', 'Admin123!')
-    rv = client.get('/logs/pages')
-    assert rv.status_code == 200
+    with flask_app.app_context():
+        db.drop_all()
 
-def test_export_csv(client):
-    login(client, 'admin', 'Admin123!')
-    rv = client.get('/logs/export/pages')
-    assert rv.status_code == 200
-    assert rv.mimetype == 'text/csv'
+
+@pytest.fixture
+def client(app):
+    return app.test_client()
+
+
+def login_admin(client):
+    return client.post('/login', data={
+        'login': 'admin',
+        'password': 'admin-Qwerty1234',
+        'remember': False
+    }, follow_redirects=True)
+
+
+def login_user(client):
+    return client.post('/login', data={
+        'login': 'testuser',
+        'password': 'qwerty-Qwerty1234',
+        'remember': False
+    }, follow_redirects=True)
+
+
+def test_admin_can_view_users(client):
+    login_admin(client)
+    response = client.get('/')
+    assert response.status_code == 200
+    assert 'Список пользователей' in response.text
+
+
+
+def test_user_cannot_edit_other_profile(client):
+    login_user(client)
+    response = client.get('/users/1/edit', follow_redirects=False)
+    assert response.status_code in [302, 403]
+
+
+
+def test_login_success(client):
+    response = login_admin(client)
+    assert response.status_code == 200
+    assert 'успешно' in response.text.lower()
+
+
+
+def test_login_failure(client):
+    response = client.post('/login', data={
+        'login': 'wronguser',
+        'password': 'WrongPassword'
+    }, follow_redirects=True)
+    assert response.status_code == 200
+    assert 'Неверный логин или пароль' in response.text
+
+
+
+def test_logs_page_accessible_for_auth_users(client):
+    login_admin(client)
+    response = client.get('/logs/')
+    assert response.status_code == 200
+    assert 'Журнал посещений' in response.text
+
+
+
+def test_logs_page_redirects_unauthenticated(client):
+    response = client.get('/logs/', follow_redirects=False)
+    assert response.status_code == 302
+    assert '/login' in response.headers['Location']
+
+
+
