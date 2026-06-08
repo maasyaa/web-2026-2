@@ -1,0 +1,34 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="Project Default" />
+    <inspection_tool class="LanguageDetectionInspection" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="PyInterpreterInspection" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="PyPackageRequirementsInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredPackages">
+        <list>
+          <option value="blinker" />
+          <option value="click" />
+          <option value="exceptiongroup" />
+          <option value="Faker" />
+          <option value="flask" />
+          <option value="importlib-metadata" />
+          <option value="iniconfig" />
+          <option value="itsdangerous" />
+          <option value="jinja2" />
+          <option value="MarkupSafe" />
+          <option value="packaging" />
+          <option value="pluggy" />
+          <option value="pytest" />
+          <option value="pytest-mock" />
+          <option value="python-dateutil" />
+          <option value="python-dotenv" />
+          <option value="six" />
+          <option value="tomli" />
+          <option value="typing-extensions" />
+          <option value="werkzeug" />
+          <option value="zipp" />
+        </list>
+      </option>
+    </inspection_tool>
+  </profile>
+</component>
