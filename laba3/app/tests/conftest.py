@@ -1,17 +1,19 @@
 import sys
 import os
-from datetime import datetime
 import pytest
+from datetime import datetime
 from flask import template_rendered
 from contextlib import contextmanager
 
-# Добавляем путь к родительской папке (где лежит app1.py)
+
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from app import app as application
+from app3 import app as application
 
 @pytest.fixture
 def app():
+    application.config['TESTING'] = True
+    application.config['WTF_CSRF_ENABLED'] = False
     return application
 
 @pytest.fixture

@@ -9,7 +9,7 @@
             </div>
             <div class="card-body">
                 <p class="text-muted">Тестовые учётные данные: <strong>user / qwerty</strong></p>
-                <form method="post" action="{{ url_for('login', next=request.args.get('next', '')) }}">
+                <form method="post" action="/login?next=" id="login-form">
                     <div class="mb-3">
                         <label for="login-username" class="form-label">Логин</label>
                         <input type="text" class="form-control" id="login-username" name="username" required autofocus>
