@@ -1,42 +1,39 @@
 import sys
 import os
-from datetime import datetime
 import pytest
 from flask import template_rendered
-from contextlib import contextmanager
+from datetime import datetime
 
-# Добавляем путь к родительской папке (где лежит app1.py)
+# Добавляем корень проекта в путь
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-# Импортируем приложение из файла app1.py (модуль app)
-from app import app as application
+# Импортируем приложение
+from app1 import app as application
 
 @pytest.fixture
-def app():
-    return application
+def client():
+    application.config['TESTING'] = True
+    with application.test_client() as client:
+        with application.app_context():
+            yield client
 
 @pytest.fixture
-def client(app):
-    return app.test_client()
-
-@pytest.fixture
-@contextmanager
-def captured_templates(app):
+def captured_templates():
     recorded = []
     def record(sender, template, context, **extra):
         recorded.append((template, context))
-    template_rendered.connect(record, app)
+    template_rendered.connect(record, application)
     try:
         yield recorded
     finally:
-        template_rendered.disconnect(record, app)
+        template_rendered.disconnect(record, application)
 
 @pytest.fixture
 def posts_list():
     return [
         {
-            'title': 'Заголовок поста',
-            'text': 'Текст поста',
+            'title': 'Тестовый пост',
+            'text': 'Текст тестового поста для проверки',
             'author': 'Иванов Иван Иванович',
             'date': datetime(2025, 3, 10),
             'image_id': '123.jpg',

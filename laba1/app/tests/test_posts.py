@@ -20,27 +20,24 @@ def test_posts_status(client):
 # 4. Test Posts Page Template Used
 def test_posts_template_used(client, captured_templates, mocker, posts_list):
     mocker.patch("app1.posts_list", return_value=posts_list)
-    with captured_templates as templates:
-        client.get('/posts')
-        assert len(templates) > 0
-        template, _ = templates[0]
-        assert template.name == 'posts.html'
+    client.get('/posts')
+    assert len(captured_templates) > 0
+    template, _ = captured_templates[0]
+    assert template.name == 'posts.html'
 
 # 5. Test Posts Page Context Title
 def test_posts_context_title(client, captured_templates, mocker, posts_list):
     mocker.patch("app1.posts_list", return_value=posts_list)
-    with captured_templates as templates:
-        client.get('/posts')
-        _, context = templates[0]
-        assert context['title'] == 'Все посты'
+    client.get('/posts')
+    _, context = captured_templates[0]
+    assert context['title'] == 'Все посты'
 
 # 6. Test Posts Page Context Posts List
 def test_posts_context_list(client, captured_templates, mocker, posts_list):
     mocker.patch("app1.posts_list", return_value=posts_list)
-    with captured_templates as templates:
-        client.get('/posts')
-        _, context = templates[0]
-        assert len(context['posts']) == 1
+    client.get('/posts')
+    _, context = captured_templates[0]
+    assert len(context['posts']) == 1
 
 # 7. Test Single Post Page Status (Valid)
 def test_post_status_valid(client, mocker, posts_list):
@@ -51,27 +48,24 @@ def test_post_status_valid(client, mocker, posts_list):
 # 8. Test Single Post Page Template Used
 def test_post_template_used(client, captured_templates, mocker, posts_list):
     mocker.patch("app1.posts_list", return_value=posts_list)
-    with captured_templates as templates:
-        client.get('/posts/0')
-        assert len(templates) > 0
-        template, _ = templates[0]
-        assert template.name == 'post.html'
+    client.get('/posts/0')
+    assert len(captured_templates) > 0
+    template, _ = captured_templates[0]
+    assert template.name == 'post.html'
 
 # 9. Test Single Post Page Context Title
 def test_post_context_title(client, captured_templates, mocker, posts_list):
     mocker.patch("app1.posts_list", return_value=posts_list)
-    with captured_templates as templates:
-        client.get('/posts/0')
-        _, context = templates[0]
-        assert context['title'] == posts_list[0]['title']
+    client.get('/posts/0')
+    _, context = captured_templates[0]
+    assert context['title'] == posts_list[0]['title']
 
 # 10. Test Single Post Page Context Post Object
 def test_post_context_object(client, captured_templates, mocker, posts_list):
     mocker.patch("app1.posts_list", return_value=posts_list)
-    with captured_templates as templates:
-        client.get('/posts/0')
-        _, context = templates[0]
-        assert context['post'] == posts_list[0]
+    client.get('/posts/0')
+    _, context = captured_templates[0]
+    assert context['post'] == posts_list[0]
 
 # 11. Test Single Post Page Content: Title
 def test_post_content_title(client, mocker, posts_list):
@@ -128,7 +122,6 @@ def test_post_404(client, mocker, posts_list):
 # 19. Test Post Template Data Parsing (Check author specifically in template data)
 def test_post_template_data(client, captured_templates, mocker, posts_list):
     mocker.patch("app1.posts_list", return_value=posts_list)
-    with captured_templates as templates:
-        client.get('/posts/0')
-        _, context = templates[0]
-        assert context['post']['author'] == 'Иванов Иван Иванович'
+    client.get('/posts/0')
+    _, context = captured_templates[0]
+    assert context['post']['author'] == 'Иванов Иван Иванович'
